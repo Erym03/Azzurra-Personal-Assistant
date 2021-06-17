@@ -1,5 +1,6 @@
 import pyttsx3
 import datetime
+import speech_recognition as sr
 
 engine = pyttsx3.init()
 
@@ -9,7 +10,27 @@ engine.setProperty('rate', voiceRate)
 
 #-  -   -   -   -   -   -   -   -   FUNZIONI -  -   -   -   -   -   -   -   
 
-def speak(audio): #La funzione per far parlare Azzurra
+#La funzione per dare comandi ad Azzurra
+def listen():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Sono in ascolto...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+
+    try:
+        print("Cerco di capire...")
+        query = r.recognize_google(audio, language="it-IT")
+        print(query)
+    except Exception as e:
+        print(e)
+        speak("Non ho capito. Ripeti, per favore.")
+        return "None"
+    return speak ("hai detto: " + query)
+    
+
+#La funzione per far parlare Azzurra
+def speak(audio): 
     engine.say(audio)
     engine.runAndWait()
 
@@ -24,18 +45,18 @@ def activation():
 
     speak("Come posso aiutarti?")
 
-
-
-
-def nowTime(): #La funzione per verificare che ore sono
+#La funzione per verificare che ore sono
+def nowTime(): 
     time = datetime.datetime.now().strftime("%H:%M") #Prende l'orario attuale e lo rende una stringa
     time = "Sono le " + time
     speak(time)
 
-def nowDay(): #La funzione per verificare che giorno è
+#La funzione per verificare che giorno è
+def nowDay(): 
     year = int(datetime.datetime.now().year)
     month = int(datetime.datetime.now().month)
     day = int(datetime.datetime.now().day)
     speak("Oggi è il " + str(day) + " " + str(month) + " del " + str(year))
 
 activation()
+listen()

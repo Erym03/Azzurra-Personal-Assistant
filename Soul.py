@@ -2,23 +2,28 @@ import pyttsx3  #pip install pyttsx3
 import datetime
 import speech_recognition as sr #pip install SpeechRecognition
 import wikipedia    #pip install wikipedia
+import smtplib
+import getpass
 from wikipedia.wikipedia import summary
-from typing import Container, Text
+from typing import Container, ContextManager, Text
 from urllib.parse import quote_from_bytes
-from pyttsx3 import engine
+from pyttsx3 import engine, speak
+
+
 
 class Soul:
 
-    engine = pyttsx3.init()
-    voiceRate = 170 #La velocità della voce di Azzurra
-    engine.setProperty('rate', voiceRate)
     wikipedia.set_lang("it")
 
     #-  -   -   -   -   -   -   -   -   FUNZIONI AURORA -  -   -   -   -   -   -   -   
         
     #La funzione per far parlare Azzurra
-    def speak(audio):
+    def speak(self, audio):
+        engine = pyttsx3.init()
+        voiceRate = 170 #La velocità della voce di Azzurra
+        engine.setProperty('rate', voiceRate)
         engine.say(audio)
+        print(audio)
         engine.runAndWait()
 
     def activation(self):
@@ -104,13 +109,25 @@ class Soul:
             print(e)
             self.speak("Non ho trovato alcun risultato. Prova a riformulare la richiesta.")
 
+    #La funzione per inviare mail
+    def sendMail(self, to, content):
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        speak("Inserire la password del tuo account email") #Per un fattore di sicurezza. È possibile anche rimuoverlo
+        pswd = getpass.getpass()
+        server.login('2.carem03@gmail.com', pswd)
+        server.sendmail('2.carem03@gmail.com', to, content)
+        server.close
+
+
+
 
     #-  -   -   -   -   -   -   -   -   MAIN    -  -   -   -   -   -   -   -  
-    def main(self):
+    def main(self): 
         self.activation()
 
         while True:
-
             query = self.listen().lower() #Associa a query il risultato di ciò che Azzurra sente
             print(query)
 
@@ -124,6 +141,17 @@ class Soul:
                 quit()
             elif "wikipedia" in query:
                 self.wikiSearch(query)
+            elif "scrivi una mail" in query or "invia una mail" in query:
+                try:
+                    speak("Quale sarà il contenuto della mail?")
+                    mailContent = self.listen()
+                    speak("Inserire l'email del destinatario.")
+                    to = input()
+                    self.sendMail(to, mailContent)
+                    speak("Email inviata correttamente")
+                except Exception as e:
+                    print(e)
+                    speak("Impossibile inviare la mail.")
 
 
-
+        

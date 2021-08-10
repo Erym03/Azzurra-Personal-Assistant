@@ -1,9 +1,7 @@
 from tkinter.constants import X
 from typing import Container, Text
-import pyttsx3  #pip install pyttsx3
-import datetime
+from Soul import *
 import speech_recognition as sr #pip install SpeechRecognition
-import wikipedia    #pip install wikipedia
 from wikipedia.wikipedia import summary 
 import tkinter as tk    #Parte grafica
 
@@ -26,9 +24,12 @@ provaBottone.place(x=275, y=200)
 
 
 
-
 #-  -   -   -   -   -   -   -   -   MAIN -  -   -   -   -   -   -   -   
 if __name__ == "__main__":
     window.mainloop()   #Avvio finestra (dovrò metterla dentro la funzione main )
+
+    #Inizializzazione anima di Aurora
+    AuroraSoul = Soul()
+    AuroraSoul.main()
 
 
